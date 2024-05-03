@@ -11,11 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('chat_messages', function (Blueprint $table) {
+        Schema::create('gpt_message_histories', function (Blueprint $table) {
             $table->id();
-            $table->string('message');
-            $table->string('author');
-            $table->unsignedBigInteger('slide_id');
+            $table->text('message');
+            $table->text('role');
             $table->timestamps();
         });
     }
@@ -25,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('chat_messages');
+        Schema::dropIfExists('gpt_message_histories');
     }
 };

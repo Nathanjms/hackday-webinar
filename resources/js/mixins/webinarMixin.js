@@ -11,15 +11,18 @@ export const webinarMixin = {
             },
             chatMessages: [],
             mp3Object: null,
+            isLoading: false,
         };
     },
     mounted() {
         window.Echo.channel("webinar.update")
-            .listen("WebinarChat", (e) =>
+            .listen("WebinarChat", (e) => {
+                this.isLoading = false;
                 // Add to the start of the array
-                this.chatMessages.unshift(e)
-            )
+                this.chatMessages.unshift(e);
+            })
             .listen("WebinarSlide", (e) => {
+                this.isLoading = false;
                 this.slide.html = e.html;
                 this.slide.script = e.script;
                 if (e.hasMp3) {
@@ -27,10 +30,14 @@ export const webinarMixin = {
                 }
             })
             .listen("WebinarRestart", (e) => {
+                this.isLoading = false;
                 alert("Webinar is restarting...");
                 this.chatMessages = [];
                 this.slide.html = "";
                 this.slide.script = "";
+            })
+            .listen("WebinarLoading", (e) => {
+                this.isLoading = true;
             });
 
         if (this.initialSlide) {

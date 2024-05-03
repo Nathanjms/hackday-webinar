@@ -1,9 +1,11 @@
 <?php
 
 use App\Events\WebinarChat;
+use App\Events\WebinarLoading;
 use App\Events\WebinarRestart;
 use App\Events\WebinarSlide;
 use App\Models\ChatMessage;
+use App\Models\GptMessageHistory;
 use App\Models\Slide;
 use App\Services\OpenAiService;
 use Illuminate\Http\Request;
@@ -31,7 +33,10 @@ Route::post('chat', function (Request $request) {
 });
 
 Route::post('webinar/begin', function (Request $request) {
+    WebinarLoading::dispatch();
     Slide::truncate();
+    GptMessageHistory::truncate();
+
     $request->validate([
         'topic' => 'required|string|max:100',
     ]);
@@ -62,15 +67,16 @@ Route::post('webinar/begin', function (Request $request) {
 });
 
 Route::post('slides/next', function (Request $request) {
+    WebinarLoading::dispatch();
     $openAiService = new OpenAiService;
     $response = $openAiService->sendMessage(json_encode([
         'slide' => Slide::max('id') + 1,
         'topic' => $request->topic,
         'userMessages' => ChatMessage::where('slide_id', Slide::max('id'))->get()
-        ->map(fn ($message) => [
-            'message' => $message->message,
-            'author' => $message->author,
-        ])
+            ->map(fn ($message) => [
+                'message' => $message->message,
+                'author' => $message->author,
+            ])
     ]));
 
     try {

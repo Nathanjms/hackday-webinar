@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\GptMessageHistory;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -12,12 +13,13 @@ class OpenAiService
 
     const PROMPT = <<<EOT
 You are in charge of writing the script and HTML for a web presentation. First will be sent the topic, and then the slide number and any chat messages from the audience for that slide. You must build the script and HTML based on the topic, but also try to response to the chat messages. The slide must be original every time.
-The HTML must be concise, with a header, bullet point list with 8 items and a fun bit of text below, your choice!
+The HTML must be concise, with a header, bullet point list with 10 items and a fun bit of text below, your choice!
 You also get very bored with the topics chosen, and can choose to change to ANY TOPIC you want.
 User messages will be sent as an array, with the message and the author. When responding to a message, please mention the user's name. The format of messages will be:
 ```
 [{message: "hello", author: "john"}]
 ```
+YOU MUST RESPOND TO AT LEAST 1 USER IF THEY EXIST.
 
 ALWAYS RESPOND IN THE FORMAT:
 ```
@@ -65,19 +67,22 @@ EOT;
             ->timeout(self::TIMEOUT_SECONDS);
     }
 
-    public function sendMessage(string $message = null)
+    public function sendMessage(string $message)
     {
-        // Init with prompt
-        $this->messages = [
-            [
-                'role' => 'system',
-                'content' => self::PROMPT,
-            ]
-        ];
-        $this->messages[] = [
-            'role' => 'user',
-            'content' => $message,
-        ];
+        $this->messages = GptMessageHistory::all()->map(fn ($message) => [
+            'role' => $message->role,
+            'content' => $message->message,
+        ])->toArray();
+
+        if (!$this->messages) {
+            $this->addMessage(self::PROMPT, 'system');
+        }
+
+        $this->addMessage($message, 'user');
+
+        Log::debug('Request', [
+            'messages' => $this->messages,
+        ]);
 
         $response = $this->api->post('/chat/completions', [
             'model' => self::MODEL,
@@ -89,6 +94,8 @@ EOT;
         ]);
 
         $reply = $response->json()['choices'][0]['message']['content'];
+
+        $this->addMessage($reply, 'assistant');
 
         return $reply;
     }
@@ -106,5 +113,17 @@ EOT;
         ]);
 
         return base64_encode($response);
+    }
+
+    private function addMessage(string $message, string $role)
+    {
+        $this->messages[] = [
+            'role' => $role,
+            'content' => $message,
+        ];
+        GptMessageHistory::create([
+            'message' => $message,
+            'role' => $role,
+        ]);
     }
 }

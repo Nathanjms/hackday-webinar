@@ -35,6 +35,9 @@
     >
         <div class="alert alert-info">Waiting for the webinar to begin...</div>
     </div>
+    <div v-else-if="isLoading">
+        <div class="alert alert-info">Loading...</div>
+    </div>
     <div v-else class="row justify-content-center">
         <button class="btn btn-primary my-2 col-12 w-fit" @click="toggleAudio">
             Toggle Audio

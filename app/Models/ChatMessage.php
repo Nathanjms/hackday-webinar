@@ -12,5 +12,6 @@ class ChatMessage extends Model
     protected $fillable = [
         'message',
         'author',
+        'slide_id'
     ];
 }

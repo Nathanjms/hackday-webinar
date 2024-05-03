@@ -23,6 +23,9 @@
             </div>
         </form>
     </div>
+    <div v-else-if="isLoading">
+        <div class="alert alert-info">Loading...</div>
+    </div>
     <template v-else>
         <div class="row justify-content-center mb-2">
             <button
