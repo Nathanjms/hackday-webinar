@@ -96,6 +96,7 @@ EOT;
             'model' => 'tts-1',
             'input' => $message,
             'voice' => 'onyx',
+            'speed' => 1.5,
         ]);
 
         Log::debug('OpenAI response', [
