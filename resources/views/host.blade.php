@@ -21,7 +21,8 @@
     <div class="container">
         <h1>Webinar!</h1>
         <div id="app" class="my-2">
-            <webinar-host></webinar-host>
+            <webinar-host :initial-slide="{{ json_encode($slide) }}"
+                :initial-chat-messages="{{ json_encode($chatMessages) }}"></webinar-host>
         </div>
     </div>
 </body>

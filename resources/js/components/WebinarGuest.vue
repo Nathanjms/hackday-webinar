@@ -74,10 +74,11 @@
                                 >
                                     Send
                                 </button>
-                                <small v-if="chatTimer" class="text-muted">
-                                    A message can only be sent every 30 seconds
-                                </small>
                             </div>
+                            <small v-text="userName"></small>
+                            <small v-if="chatTimer" class="text-muted">
+                                A message can only be sent every 30 seconds
+                            </small>
                         </div>
                     </form>
                 </div>

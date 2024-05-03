@@ -2,7 +2,6 @@
 
 namespace App\Events;
 
-use App\Models\Slide;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
@@ -11,19 +10,16 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class WebinarSlide implements ShouldBroadcast
+class WebinarRestart implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public string $html;
-    public string $script;
     /**
      * Create a new event instance.
      */
-    public function __construct(Slide $slide)
+    public function __construct()
     {
-        $this->html = $slide->html;
-        $this->script = $slide->script;
+        //
     }
 
     /**

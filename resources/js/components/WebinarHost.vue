@@ -1,7 +1,10 @@
 <template>
     <div class="row justify-content-center mb-2">
         <div class="col-md-12">
-            <button class="btn btn-primary" @click="nextSlide">Next</button>
+            <div class="d-flex justify-content-between">
+                <button class="btn btn-primary" @click="nextSlide">Next</button>
+                <button class="btn btn-danger" @click="restart">Restart</button>
+            </div>
         </div>
     </div>
     <div class="row justify-content-center mb-2">
@@ -40,44 +43,19 @@
 </template>
 
 <script>
+import { webinarMixin } from "../mixins/webinarMixin";
 export default {
-    data() {
-        return {
-            slide: {
-                html: "",
-                script: "",
-            },
-            chatMessages: [],
-        };
-    },
-    mounted() {
-        window.Echo.channel("webinar.update")
-            .listen("WebinarChat", (e) =>
-                // Add to the start of the array
-                this.chatMessages.unshift(e)
-            )
-            .listen("WebinarSlide", (e) => {
-                this.slide.html = e.html;
-                this.slide.script = e.script;
-            });
-    },
-    unmounted() {
-        window.Echo.leave("webinar.update");
-    },
-    watch: {
-        // html change re-writws the iframe:
-        "slide.html": function () {
-            let iframe = document.querySelector("iframe");
-            // first clear all content:
-            iframe.contentDocument.body.innerHTML = "";
-            document
-                .querySelector("iframe")
-                .contentDocument.write(this.slide.html);
-        },
-    },
+    mixins: [webinarMixin],
     methods: {
         nextSlide() {
-            axios.post("/api/slides/next");
+            axios
+                .post("/api/slides/next")
+                .catch((e) => alert(e.data?.response?.error || e.message));
+        },
+        restart() {
+            axios
+                .post("/api/restart")
+                .catch((e) => alert(e.data?.response?.error || e.message));
         },
         sendMessage() {
             // Can only send message every 30 seconds:
@@ -90,10 +68,12 @@ export default {
                 this.chatTimer = null;
             }, 30000);
 
-            axios.post("/api/chat", {
-                message: this.chat.message,
-                author: this.userName,
-            });
+            axios
+                .post("/api/chat", {
+                    message: this.chat.message,
+                    author: this.userName,
+                })
+                .catch((e) => alert(e.data?.response?.error || e.message));
             this.chat.message = "";
         },
     },

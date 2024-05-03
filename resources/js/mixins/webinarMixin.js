@@ -1,4 +1,8 @@
 export const webinarMixin = {
+    props: {
+        initialSlide: Object,
+        initialChatMessages: Array,
+    },
     data() {
         return {
             slide: {
@@ -17,7 +21,24 @@ export const webinarMixin = {
             .listen("WebinarSlide", (e) => {
                 this.slide.html = e.html;
                 this.slide.script = e.script;
+            })
+            .listen("WebinarRestart", (e) => {
+                alert("Webinar is restarting...");
+                this.chatMessages = [];
+                this.slide.html = "";
+                this.slide.script = "";
             });
+
+        if (this.initialSlide) {
+            this.slide.html = this.initialSlide.html;
+            this.slide.script = this.initialSlide.script;
+        } else {
+            this.slide.html = "<h1>Coming Soon...</h1>";
+        }
+
+        if (this.initialChatMessages) {
+            this.chatMessages = this.initialChatMessages;
+        }
     },
     beforeUnmount() {
         window.Echo.leave("webinar.update");
