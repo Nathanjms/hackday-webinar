@@ -39,15 +39,26 @@
         <div class="col-md-4" style="height: 80vh; max-height: 1000px">
             <div class="card h-100">
                 <div class="card-header">Chat</div>
-                <div class="card-body">
+                <div class="card-body overflow-auto d-flex flex-column-reverse">
                     <div v-for="message in chatMessages">
                         {{ message.message }}
+                        <div class="flex">
+                            <small class="text-muted me-1">{{
+                                message.createdAt
+                            }}</small>
+                            <small class="text-muted me-1">|</small>
+                            <small class="text-muted me-1">{{
+                                message.author
+                            }}</small>
+                        </div>
                     </div>
                 </div>
                 <div class="card-footer">
                     <form @submit.prevent="sendMessage">
                         <div class="form-group">
-                            <label for="chat">Chat</label>
+                            <label class="visually-hidden" for="chat"
+                                >Chat</label
+                            >
                             <div class="input-group">
                                 <input
                                     type="text"
@@ -58,9 +69,13 @@
                                 <button
                                     type="submit"
                                     class="btn btn-primary input-group-append"
+                                    :disabled="chatTimer !== null"
                                 >
                                     Send
                                 </button>
+                                <small v-if="chatTimer" class="text-muted">
+                                    A message can only be sent every 30 seconds
+                                </small>
                             </div>
                         </div>
                     </form>
@@ -81,6 +96,7 @@ export default {
             },
             chat: { message: "" },
             chatMessages: [],
+            chatTimer: null, // Can only send a message every 30 seconds
         };
     },
     beforeMount() {
@@ -91,12 +107,15 @@ export default {
     },
     mounted() {
         console.log("Component mounted.");
-        window.Echo.channel("test.event").listen("TestEvent", (e) =>
-            console.log({ e })
-        );
+        window.Echo.channel("webinar.update")
+            .listen("WebinarChat", (e) =>
+                // Add to the start of the array
+                this.chatMessages.unshift(e)
+            )
+            .listen("WebinarSlide", (e) => (this.slide.html = e.html));
     },
     unmounted() {
-        window.Echo.leave("test.event");
+        window.Echo.leave("webinar.update");
     },
     methods: {
         setName() {
@@ -111,10 +130,23 @@ export default {
             this.userName = this.form.userName;
         },
         sendMessage() {
+            // Can only send message every 30 seconds:
+            if (this.chatTimer) {
+                alert("You can only send a message every 30 seconds");
+                return;
+            }
+
+            this.chatTimer = setTimeout(() => {
+                this.chatTimer = null;
+            }, 30000);
+
             document
                 .querySelector("iframe")
                 .contentDocument.write("<h1>Injected from parent frame</h1>");
-            axios.post("/api/test");
+            axios.post("/api/chat", {
+                message: this.chat.message,
+                author: this.userName,
+            });
             this.chat.message = "";
         },
     },
