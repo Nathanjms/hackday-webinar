@@ -128,4 +128,6 @@ return [
         'token' => env('OPEN_AI_TOKEN'),
     ],
 
+    'host_key' => env('HOST_KEY'),
+
 ];
