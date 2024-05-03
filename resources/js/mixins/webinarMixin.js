@@ -12,6 +12,7 @@ export const webinarMixin = {
             chatMessages: [],
             mp3Object: null,
             isLoading: false,
+            showScript: false,
         };
     },
     mounted() {
@@ -32,12 +33,14 @@ export const webinarMixin = {
             .listen("WebinarRestart", (e) => {
                 this.isLoading = false;
                 alert("Webinar is restarting...");
-                this.chatMessages = [];
-                this.slide.html = "";
-                this.slide.script = "";
+                window.location.reload();
             })
             .listen("WebinarLoading", (e) => {
                 this.isLoading = true;
+                if (this.mp3Object) {
+                    this.mp3Object.pause();
+                    this.mp3Object = null;
+                }
             });
 
         if (this.initialSlide) {
@@ -100,6 +103,12 @@ export const webinarMixin = {
                 } else {
                     this.mp3Object.pause();
                 }
+            }
+        },
+        restartAudio() {
+            if (this.mp3Object) {
+                this.mp3Object.currentTime = 0;
+                this.mp3Object.play();
             }
         },
     },

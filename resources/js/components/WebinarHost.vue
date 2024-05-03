@@ -28,12 +28,14 @@
     </div>
     <template v-else>
         <div class="row justify-content-center mb-2">
-            <button
-                class="btn btn-primary my-2 col-12 w-fit"
-                @click="toggleAudio"
-            >
-                Toggle Audio
-            </button>
+            <div class="col-12 my-2">
+                <button class="btn btn-primary me-2" @click="toggleAudio">
+                    Toggle Audio
+                </button>
+                <button class="btn btn-outline-light" @click="restartAudio">
+                    Restart Audio
+                </button>
+            </div>
             <div class="col-md-12">
                 <div class="d-flex justify-content-between">
                     <button class="btn btn-primary" @click="nextSlide">
@@ -51,10 +53,10 @@
             </div>
         </div>
         <div class="row justify-content-center">
-            <div class="col-md-8" style="height: 80vh; max-height: 1000px">
+            <div class="col-md-8 mb-1" style="max-height: 1000px">
                 <div
                     class="bg-secondary p-2 rounded w-100"
-                    style="height: 80vh; max-height: 1000px"
+                    style="max-height: 1000px"
                     v-html="slide.html"
                 ></div>
             </div>

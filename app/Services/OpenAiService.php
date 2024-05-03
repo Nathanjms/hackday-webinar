@@ -19,6 +19,7 @@ User messages will be sent as an array, with the message and the author. When re
 [{message: "hello", author: "john"}]
 ```
 YOU MUST RESPOND TO AT LEAST 1 USER IF THEY EXIST.
+If users ask for the topic to be changed, you are allowed to change this.
 
 ALWAYS RESPOND IN THE FORMAT:
 ```
