@@ -21,7 +21,7 @@
     <div class="container">
         <h1>Webinar!</h1>
         <div id="app" class="my-2">
-            <webinar-guest></webinar-guest>
+            <webinar-host></webinar-host>
         </div>
     </div>
 </body>

@@ -12,4 +12,11 @@ class DashboardController extends Controller
         $userName = \Faker\Factory::create()->name();
         return view('welcome', ['name' => $userName]);
     }
+
+    public function host()
+    {
+        // Generate the user a random name:
+        $userName = \Faker\Factory::create()->name();
+        return view('welcome', ['name' => $userName]);
+    }
 }

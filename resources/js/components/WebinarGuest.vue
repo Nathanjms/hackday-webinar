@@ -32,6 +32,7 @@
     <div v-else class="row justify-content-center">
         <div class="col-md-8" style="height: 80vh; max-height: 1000px">
             <iframe
+                ref="iframe"
                 class="w-100"
                 style="height: 80vh; max-height: 1000px"
             ></iframe>
@@ -86,16 +87,14 @@
 </template>
 
 <script>
+import { webinarMixin } from "../mixins/webinarMixin";
 export default {
+    mixins: [webinarMixin],
     data() {
         return {
             form: { userName: "" },
             userName: "",
-            slide: {
-                html: "",
-            },
             chat: { message: "" },
-            chatMessages: [],
             chatTimer: null, // Can only send a message every 30 seconds
         };
     },
@@ -104,18 +103,6 @@ export default {
             this.userName = localStorage.getItem("userName");
             this.form.userName = this.userName;
         }
-    },
-    mounted() {
-        console.log("Component mounted.");
-        window.Echo.channel("webinar.update")
-            .listen("WebinarChat", (e) =>
-                // Add to the start of the array
-                this.chatMessages.unshift(e)
-            )
-            .listen("WebinarSlide", (e) => (this.slide.html = e.html));
-    },
-    unmounted() {
-        window.Echo.leave("webinar.update");
     },
     methods: {
         setName() {
@@ -140,9 +127,6 @@ export default {
                 this.chatTimer = null;
             }, 30000);
 
-            document
-                .querySelector("iframe")
-                .contentDocument.write("<h1>Injected from parent frame</h1>");
             axios.post("/api/chat", {
                 message: this.chat.message,
                 author: this.userName,
