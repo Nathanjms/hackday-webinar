@@ -17,6 +17,7 @@ class WebinarSlide implements ShouldBroadcast
 
     public string $html;
     public string $script;
+    public bool $hasMp3;
     /**
      * Create a new event instance.
      */
@@ -24,6 +25,7 @@ class WebinarSlide implements ShouldBroadcast
     {
         $this->html = $slide->html;
         $this->script = $slide->script;
+        $this->hasMp3 = !!$slide->mp3;
     }
 
     /**

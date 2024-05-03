@@ -10,6 +10,7 @@ export const webinarMixin = {
                 script: "",
             },
             chatMessages: [],
+            mp3Object: null,
         };
     },
     mounted() {
@@ -21,6 +22,9 @@ export const webinarMixin = {
             .listen("WebinarSlide", (e) => {
                 this.slide.html = e.html;
                 this.slide.script = e.script;
+                if (e.hasMp3) {
+                    this.getMp3();
+                }
             })
             .listen("WebinarRestart", (e) => {
                 alert("Webinar is restarting...");
@@ -32,8 +36,13 @@ export const webinarMixin = {
         if (this.initialSlide) {
             this.slide.html = this.initialSlide.html;
             this.slide.script = this.initialSlide.script;
-        } else {
-            this.slide.html = "<h1>Coming Soon...</h1>";
+            // Play the base64 encoded mp3:
+            if (this.initialSlide.mp3) {
+                this.mp3Object = new Audio(
+                    "data:audio/mpeg;base64," + this.initialSlide.mp3
+                );
+                this.mp3Object.play();
+            }
         }
 
         if (this.initialChatMessages) {
@@ -42,17 +51,6 @@ export const webinarMixin = {
     },
     beforeUnmount() {
         window.Echo.leave("webinar.update");
-    },
-    watch: {
-        // html change re-writws the iframe:
-        "slide.html": function () {
-            let iframe = this.$refs.iframe;
-            // first clear all content:
-            iframe.contentDocument.body.innerHTML = "";
-            document
-                .querySelector("iframe")
-                .contentDocument.write(this.slide.html);
-        },
     },
     methods: {
         nextSlide() {
@@ -74,6 +72,28 @@ export const webinarMixin = {
                 author: this.userName,
             });
             this.chat.message = "";
+        },
+        getMp3() {
+            axios
+                .get("/api/slides/mp3")
+                .then((response) => {
+                    this.mp3Object = new Audio(
+                        "data:audio/mpeg;base64," + response.data
+                    );
+                    this.mp3Object.play();
+                })
+                .catch(() => {
+                    alert("Could not get mp3");
+                });
+        },
+        toggleAudio() {
+            if (this.mp3Object) {
+                if (this.mp3Object.paused) {
+                    this.mp3Object.play();
+                } else {
+                    this.mp3Object.pause();
+                }
+            }
         },
     },
 };

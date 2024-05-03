@@ -123,4 +123,9 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    'open-ai' => [
+        'api_host' => env('OPEN_AI_API_HOST', 'https://api.openai.com/v1'),
+        'token' => env('OPEN_AI_TOKEN'),
+    ],
+
 ];

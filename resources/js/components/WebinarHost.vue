@@ -1,52 +1,105 @@
 <template>
-    <div class="row justify-content-center mb-2">
-        <div class="col-md-12">
-            <div class="d-flex justify-content-between">
-                <button class="btn btn-primary" @click="nextSlide">Next</button>
-                <button class="btn btn-danger" @click="restart">Restart</button>
+    <div
+        v-if="initialSlide === null && !slide.html"
+        class="row justify-content-center mb-2"
+    >
+        <form @submit.prevent="begin">
+            <div class="form-group">
+                <label for="topic">Topic</label>
+                <div class="input-group">
+                    <input
+                        type="text"
+                        class="form-control"
+                        id="topic"
+                        v-model="form.topic"
+                    />
+                    <button
+                        type="submit"
+                        class="btn btn-primary input-group-append"
+                    >
+                        Send
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <template v-else>
+        <div class="row justify-content-center mb-2">
+            <button
+                class="btn btn-primary my-2 col-12 w-fit"
+                @click="toggleAudio"
+            >
+                Toggle Audio
+            </button>
+            <div class="col-md-12">
+                <div class="d-flex justify-content-between">
+                    <button class="btn btn-primary" @click="nextSlide">
+                        Next
+                    </button>
+                    <button class="btn btn-danger" @click="restart">
+                        Restart
+                    </button>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="row justify-content-center mb-2">
-        <div class="col-md-12">
-            <pre class="rounded bg-secondary">{{ slide.script }}</pre>
+        <div class="row justify-content-center mb-2">
+            <div class="col-md-12">
+                <div class="p-2 rounded bg-secondary">{{ slide.script }}</div>
+            </div>
         </div>
-    </div>
-    <div class="row justify-content-center">
-        <div class="col-md-8" style="height: 80vh; max-height: 1000px">
-            <iframe
-                ref="iframe"
-                class="w-100"
-                style="height: 80vh; max-height: 1000px"
-            ></iframe>
-        </div>
-        <div class="col-md-4" style="height: 80vh; max-height: 1000px">
-            <div class="card h-100">
-                <div class="card-header">Chat</div>
-                <div class="card-body overflow-auto d-flex flex-column-reverse">
-                    <div v-for="message in chatMessages">
-                        {{ message.message }}
-                        <div class="flex">
-                            <small class="text-muted me-1">{{
-                                message.createdAt
-                            }}</small>
-                            <small class="text-muted me-1">|</small>
-                            <small class="text-muted me-1">{{
-                                message.author
-                            }}</small>
+        <div class="row justify-content-center">
+            <div class="col-md-8" style="height: 80vh; max-height: 1000px">
+                <div
+                    class="bg-secondary p-2 rounded w-100"
+                    style="height: 80vh; max-height: 1000px"
+                    v-html="slide.html"
+                ></div>
+            </div>
+            <div class="col-md-4" style="height: 80vh; max-height: 1000px">
+                <div class="card h-100">
+                    <div class="card-header">Chat</div>
+                    <div
+                        class="card-body overflow-auto d-flex flex-column-reverse"
+                    >
+                        <div v-for="message in chatMessages">
+                            {{ message.message }}
+                            <div class="flex">
+                                <small class="text-muted me-1">{{
+                                    message.createdAt
+                                }}</small>
+                                <small class="text-muted me-1">|</small>
+                                <small class="text-muted me-1">{{
+                                    message.author
+                                }}</small>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    </template>
 </template>
 
 <script>
 import { webinarMixin } from "../mixins/webinarMixin";
 export default {
     mixins: [webinarMixin],
+    data() {
+        return {
+            form: { topic: "" },
+        };
+    },
     methods: {
+        begin() {
+            axios
+                .post("/api/webinar/begin", {
+                    topic: this.form.topic,
+                })
+                .catch((e) => alert(e.data?.response?.error || e.message))
+                .finally(() => {
+                    this.form.topic = "";
+                });
+        },
         nextSlide() {
             axios
                 .post("/api/slides/next")

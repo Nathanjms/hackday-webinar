@@ -29,13 +29,22 @@
             </div>
         </div>
     </div>
+    <div
+        v-else-if="initialSlide === null && !slide.html"
+        class="row justify-content-center"
+    >
+        <div class="alert alert-info">Waiting for the webinar to begin...</div>
+    </div>
     <div v-else class="row justify-content-center">
+        <button class="btn btn-primary my-2 col-12 w-fit" @click="toggleAudio">
+            Toggle Audio
+        </button>
         <div class="col-md-8" style="height: 80vh; max-height: 1000px">
-            <iframe
-                ref="iframe"
-                class="w-100"
+            <div
+                class="bg-secondary p-2 rounded w-100"
                 style="height: 80vh; max-height: 1000px"
-            ></iframe>
+                v-html="slide.html"
+            ></div>
         </div>
         <div class="col-md-4" style="height: 80vh; max-height: 1000px">
             <div class="card h-100">

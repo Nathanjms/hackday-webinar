@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->text('html');
             $table->text('script');
+            $table->longText('mp3');
             $table->timestamps();
         });
     }

@@ -10,5 +10,6 @@ class Slide extends Model
     protected $fillable = [
         'html',
         'script',
+        'mp3',
     ];
 }
