@@ -30,7 +30,9 @@
         </div>
     </div>
     <div v-else-if="isLoading">
-        <div class="alert alert-info">Loading...</div>
+        <div class="alert alert-info">
+            Loading... This usually takes about 30s
+        </div>
     </div>
     <div
         v-else-if="initialSlide === null && !slide.html"
