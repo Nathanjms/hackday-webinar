@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome', [
         'slide' => Slide::orderBy('id', 'desc')->first(),
-        'chatMessages' => ChatMessage::all(),
+        'chatMessages' => ChatMessage::getAllFormattedForWebinar(),
     ]);
 });
 
@@ -18,6 +18,6 @@ Route::get('/host', function (Request $request) {
     }
     return view('host', [
         'slide' => Slide::orderBy('id', 'desc')->first(),
-        'chatMessages' => ChatMessage::all(),
+        'chatMessages' => ChatMessage::getAllFormattedForWebinar(),
     ]);
 });

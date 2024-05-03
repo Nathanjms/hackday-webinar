@@ -14,4 +14,13 @@ class ChatMessage extends Model
         'author',
         'slide_id'
     ];
+
+    public static function getAllFormattedForWebinar()
+    {
+        return ChatMessage::orderBy('id', 'desc')->get()->map(fn ($m) => [
+            'message' => $m->message,
+            'author' => $m->author,
+            'createdAt' => $m->created_at->setTimezone('Europe/London')->format('H:i'),
+        ]);
+    }
 }

@@ -40,70 +40,81 @@
     >
         <div class="alert alert-info">Waiting for the webinar to begin...</div>
     </div>
-    <div v-else class="row justify-content-center">
-        <div class="col-12 my-2">
-            <button class="btn btn-primary me-2" @click="toggleAudio">
-                Toggle Audio
-            </button>
-            <button class="btn btn-outline-light" @click="restartAudio">
-                Restart Audio
-            </button>
+    <template v-else>
+        <div class="row justify-content-center mb-2">
+            <div class="col-12 my-2">
+                <button class="btn btn-primary me-2" @click="toggleAudio">
+                    Toggle Audio
+                </button>
+                <button class="btn btn-outline-light" @click="restartAudio">
+                    Restart Audio
+                </button>
+            </div>
         </div>
-        <div class="col-md-8 mb-1" style="max-height: 1000px">
-            <div
-                class="bg-secondary p-2 rounded w-100"
-                style="max-height: 1000px"
-                v-html="slide.html"
-            ></div>
+        <div class="row justify-content-center mb-2">
+            <div class="col-md-12">
+                <div class="p-2 rounded bg-secondary">{{ slide.script }}</div>
+            </div>
         </div>
-        <div class="col-md-4" style="height: 80vh; max-height: 1000px">
-            <div class="card h-100">
-                <div class="card-header">Chat</div>
-                <div class="card-body overflow-auto d-flex flex-column-reverse">
-                    <div v-for="message in chatMessages">
-                        {{ message.message }}
-                        <div class="flex">
-                            <small class="text-muted me-1">{{
-                                message.createdAt
-                            }}</small>
-                            <small class="text-muted me-1">|</small>
-                            <small class="text-muted me-1">{{
-                                message.author
-                            }}</small>
+        <div class="row justify-content-center mb-2">
+            <div class="col-md-8 mb-1" style="max-height: 1000px">
+                <div
+                    class="bg-secondary p-2 rounded w-100"
+                    style="max-height: 1000px"
+                    v-html="slide.html"
+                ></div>
+            </div>
+            <div class="col-md-4" style="height: 80vh; max-height: 1000px">
+                <div class="card h-100">
+                    <div class="card-header">Chat</div>
+                    <div
+                        class="card-body overflow-auto d-flex flex-column-reverse"
+                    >
+                        <div v-for="message in chatMessages">
+                            {{ message.message }}
+                            <div class="flex">
+                                <small class="text-muted me-1">{{
+                                    message.createdAt
+                                }}</small>
+                                <small class="text-muted me-1">|</small>
+                                <small class="text-muted me-1">{{
+                                    message.author
+                                }}</small>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="card-footer">
-                    <form @submit.prevent="sendMessage">
-                        <div class="form-group">
-                            <label class="visually-hidden" for="chat"
-                                >Chat</label
-                            >
-                            <div class="input-group">
-                                <input
-                                    type="text"
-                                    class="form-control"
-                                    id="chat"
-                                    v-model="chat.message"
-                                />
-                                <button
-                                    type="submit"
-                                    class="btn btn-primary input-group-append"
-                                    :disabled="chatTimer !== null"
+                    <div class="card-footer">
+                        <form @submit.prevent="sendMessage">
+                            <div class="form-group">
+                                <label class="visually-hidden" for="chat"
+                                    >Chat</label
                                 >
-                                    Send
-                                </button>
+                                <div class="input-group">
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        id="chat"
+                                        v-model="chat.message"
+                                    />
+                                    <button
+                                        type="submit"
+                                        class="btn btn-primary input-group-append"
+                                        :disabled="chatTimer !== null"
+                                    >
+                                        Send
+                                    </button>
+                                </div>
+                                <small v-text="userName"></small>
+                                <small v-if="chatTimer" class="text-muted">
+                                    A message can only be sent every 30 seconds
+                                </small>
                             </div>
-                            <small v-text="userName"></small>
-                            <small v-if="chatTimer" class="text-muted">
-                                A message can only be sent every 30 seconds
-                            </small>
-                        </div>
-                    </form>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    </template>
 </template>
 
 <script>
@@ -119,8 +130,8 @@ export default {
         };
     },
     beforeMount() {
-        if (localStorage.getItem("userName")) {
-            this.userName = localStorage.getItem("userName");
+        if (sessionStorage.getItem("userName")) {
+            this.userName = sessionStorage.getItem("userName");
             this.form.userName = this.userName;
         }
     },
@@ -135,7 +146,7 @@ export default {
                 return;
             }
             sessionStorage.setItem("userName", this.form.userName);
-            this.userName = this.form.userName;
+            window.location.reload();
         },
         sendMessage() {
             // Can only send message every 30 seconds:
