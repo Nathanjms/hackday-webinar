@@ -29,14 +29,14 @@
             </div>
         </div>
     </div>
+    <div v-else-if="isLoading">
+        <div class="alert alert-info">Loading...</div>
+    </div>
     <div
         v-else-if="initialSlide === null && !slide.html"
         class="row justify-content-center"
     >
         <div class="alert alert-info">Waiting for the webinar to begin...</div>
-    </div>
-    <div v-else-if="isLoading">
-        <div class="alert alert-info">Loading...</div>
     </div>
     <div v-else class="row justify-content-center">
         <button class="btn btn-primary my-2 col-12 w-fit" @click="toggleAudio">
@@ -125,8 +125,9 @@ export default {
                 this.form.userName.length > 15
             ) {
                 alert("Name must be between 1 and 15 characters");
+                return;
             }
-            localStorage.setItem("userName", this.form.userName);
+            sessionStorage.setItem("userName", this.form.userName);
             this.userName = this.form.userName;
         },
         sendMessage() {

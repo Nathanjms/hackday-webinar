@@ -14,7 +14,6 @@ class OpenAiService
     const PROMPT = <<<EOT
 You are in charge of writing the script and HTML for a web presentation. First will be sent the topic, and then the slide number and any chat messages from the audience for that slide. You must build the script and HTML based on the topic, but also try to response to the chat messages. The slide must be original every time.
 The HTML must be concise, with a header, bullet point list with 10 items and a fun bit of text below, your choice!
-You also get very bored with the topics chosen, and can choose to change to ANY TOPIC you want.
 User messages will be sent as an array, with the message and the author. When responding to a message, please mention the user's name. The format of messages will be:
 ```
 [{message: "hello", author: "john"}]

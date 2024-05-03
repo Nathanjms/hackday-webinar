@@ -1,6 +1,9 @@
 <template>
+    <div v-if="isLoading">
+        <div class="alert alert-info">Loading...</div>
+    </div>
     <div
-        v-if="initialSlide === null && !slide.html"
+        v-else-if="initialSlide === null && !slide.html"
         class="row justify-content-center mb-2"
     >
         <form @submit.prevent="begin">
@@ -22,9 +25,6 @@
                 </div>
             </div>
         </form>
-    </div>
-    <div v-else-if="isLoading">
-        <div class="alert alert-info">Loading...</div>
     </div>
     <template v-else>
         <div class="row justify-content-center mb-2">
